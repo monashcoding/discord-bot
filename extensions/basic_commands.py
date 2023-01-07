@@ -67,12 +67,12 @@ async def on_component_interaction(event: hikari.InteractionCreateEvent) -> None
 @lightbulb.command('search', 'Search the handbook by unit code.')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def search_unit_code(ctx: lightbulb.Context):
-    unit_dict = search_by_unit_code(ctx.options.code, handbook)
+    unit_code = ctx.options.code.upper()
+    unit_dict = search_by_unit_code(unit_code, handbook)
     if (not unit_dict):
         await ctx.respond(content="Invalid unit code")
-    unit_code = ctx.options.code
     # Creation of embed
-    embed = embed_maker(ctx.options.code, handbook)
+    embed = embed_maker(unit_code, handbook)
     # make button: requisites
     row = ctx.bot.rest.build_message_action_row()
     labels = ["Prerequisites", "Corerequisites", "Prohibitions", "back"]
@@ -88,7 +88,7 @@ async def search_unit_code(ctx: lightbulb.Context):
 @lightbulb.command('search_prereqs_to', 'Searches for units that the current unit is a prereq to.')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def search_prereqs_to(ctx: lightbulb.Context):
-    unit_code = ctx.options.code
+    unit_code = ctx.options.code.upper()
     prereqs_to_str = str_prereqs_to(unit_code, handbook)
     if (not prereqs_to_str):
         prereqs_to_str = "No current units."
@@ -102,7 +102,7 @@ async def search_prereqs_to(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def list_codes(ctx: lightbulb.Context):
     output = ""
-    unit_list = ctx.options.unit_list.replace(" ", "").split(",")
+    unit_list = ctx.options.unit_list.upper().replace(" ", "").split(",")
     units_lst = units_can_complete(unit_list, handbook)
     for unit in units_lst:
         output += f"{unit}\n"
