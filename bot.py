@@ -3,7 +3,7 @@ from channels import *
 # Import the command handler
 import lightbulb
 import hikari
-token = "MTA1MTc3OTIwNzYxODg5NTkwMw.GlEm_V.-weK3z_tDSLWmhC6QbrMoBczDJEvmkEaMw73gQ"
+token = "MTA1MTc3OTIwNzYxODg5NTkwMw.GmSNwu.MvzYaVh4I-gjrD3105pXdHShm1b3hQp9m9lXp0"
 # Instantiate a Bot instance
 bot = lightbulb.BotApp(token, prefix="!", intents=hikari.Intents.ALL, default_enabled_guilds= [810515446046523442, 804513491763200001])
 

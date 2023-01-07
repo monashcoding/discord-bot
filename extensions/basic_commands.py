@@ -5,7 +5,7 @@ from custom_commands.main_commands import *
 plugin = lightbulb.Plugin('basic_commands')
 
 with open('JSON\handbook_data_complete.json', 'r') as f:
-    handbook = json.load(f)
+    handbook: dict = json.load(f)
 
 
 def load(bot):
@@ -68,7 +68,7 @@ async def on_component_interaction(event: hikari.InteractionCreateEvent) -> None
 @lightbulb.implements(lightbulb.SlashCommand)
 async def search_unit_code(ctx: lightbulb.Context):
     unit_code = ctx.options.code.upper()
-    unit_dict = search_by_unit_code(unit_code, handbook)
+    unit_dict = handbook.get(unit_code, False)
     if (not unit_dict):
         await ctx.respond(content="Invalid unit code")
     # Creation of embed
@@ -89,6 +89,9 @@ async def search_unit_code(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def search_prereqs_to(ctx: lightbulb.Context):
     unit_code = ctx.options.code.upper()
+    unit_dict = handbook.get(unit_code, False)
+    if (not unit_dict):
+        await ctx.respond(content="Invalid unit code")
     prereqs_to_str = str_prereqs_to(unit_code, handbook)
     if (not prereqs_to_str):
         prereqs_to_str = "No current units."
@@ -102,7 +105,18 @@ async def search_prereqs_to(ctx: lightbulb.Context):
 @lightbulb.implements(lightbulb.SlashCommand)
 async def list_codes(ctx: lightbulb.Context):
     output = ""
+    output_invalid = "The following input units are invalid:\n"
+    invalid_counter = False
     unit_list = ctx.options.unit_list.upper().replace(" ", "").split(",")
+
+    for unit in unit_list:
+        if not (handbook.get(unit, False)):
+            output_invalid += f'{unit}'
+            invalid_counter = True
+    if (invalid_counter):
+        return ctx.respond(output_invalid)
+
+
     units_lst = units_can_complete(unit_list, handbook)
     for unit in units_lst:
         output += f"{unit}\n"

@@ -1,18 +1,4 @@
-def valid_code_check(unit_code: str, handbook: dict) -> bool:
-    """Checks if unit is valid.
 
-    Args:
-        unit_code (str): _description_
-        handbook (dict): _description_
-
-    Returns:
-        bool: _description_
-    """
-    try:
-        var = handbook[unit_code]
-        return True
-    except KeyError:
-        return False
 
 def unit_prohibition_check(unit_list: str, unit_code: str, handbook: dict) -> bool:
     # if any unit in the unit list is prohibited compared to unit code, return False.
@@ -38,13 +24,10 @@ def prereqs_to(unit_code: str, handbook: dict) -> list:
     
     """
     output = []
-    try:
-        for unit in handbook:
-            for unit_prereq_dict in handbook[unit]['requisites']['prerequisites']:
-                if (unit_code in unit_prereq_dict['units']):
-                    output.append(unit)
-    except KeyError:
-        return []
+    for unit in handbook:
+        for unit_prereq_dict in handbook[unit]['requisites']['prerequisites']:
+            if (unit_code in unit_prereq_dict['units']):
+                output.append(unit)
     return output
 
 

@@ -1,7 +1,6 @@
 import hikari
-from custom_commands.unit_search import *
-def embed_maker(unit_code, handbook):
-    unit_dict = search_by_unit_code(unit_code, handbook)
+def embed_maker(unit_code: str, handbook: dict):
+    unit_dict = handbook.get(unit_code, {})
     # Creation of embed
 
     unit_name = unit_dict['unit_name']
