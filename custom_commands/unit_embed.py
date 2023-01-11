@@ -35,24 +35,4 @@ def embed_maker(unit_code: str, handbook: dict):
     embed.add_field("Offerings:", unit_offering_str)
     embed.add_field("Number of credits required prior:",
                     unit_reqs_dict['cp_required'])
-
-    # make button: requisites
-    unit_prohibs_str = ""
-    for unit in unit_prohibs:
-        unit_prohibs_str += f"{unit}, "
-
-    unit_coreqs_str = ""
-    for unit in unit_coreqs:
-        unit_coreqs_str += f"{unit}, "
-
-    prereq_unit = ""
-    for prereq_unit_dict in unit_prereqs:
-        prereq_unit = f"{prereq_unit_dict['NumReq']} of "
-        for unit in prereq_unit_dict['units']:
-            prereq_unit += f"{unit}, "
-        prereq_unit += " or "
-
-    arr = prereq_unit.split(",")
-    arr.pop()
-    prereq_unit = "".join(arr)
     return embed

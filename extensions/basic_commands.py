@@ -24,23 +24,17 @@ async def on_component_interaction(event: hikari.InteractionCreateEvent) -> None
     output_str = ""
     if label == "Prerequisites":
         unit_prereqs = unit_dict['requisites']['prerequisites']
-
         for prereq_unit_dict in unit_prereqs:
-            prereq_unit = f"{prereq_unit_dict['NumReq']} of "
-            for unit in prereq_unit_dict['units']:
-                prereq_unit += f"{unit}, "
-            prereq_unit += "\n"
-            output_str += prereq_unit
-
+            temp_lst = [f"\n{prereq_unit_dict['NumReq']} of"]
+            temp_lst.append("\n".join([unit_or for unit_or in prereq_unit_dict['units']]))
+            output_str += "\n".join(temp_lst)
     elif label == "Corerequisites":
         unit_coreqs = unit_dict['requisites']['corequisites']
 
         for coreqs_unit_dict in unit_coreqs:
-            coreqs_unit = f"{coreqs_unit_dict['NumReq']} of "
-            for unit in coreqs_unit_dict['units']:
-                coreqs_unit += f"{unit}, "
-            coreqs_unit += "\n"
-            output_str += coreqs_unit
+            temp_lst = [f"\n{coreqs_unit_dict['NumReq']} of"]
+            temp_lst.append("\n".join([unit_or for unit_or in coreqs_unit_dict['units']]))
+            output_str += "\n".join(temp_lst)
 
     elif label == "Prohibitions":
         unit_prohibs = unit_dict['requisites']['prohibitions']
