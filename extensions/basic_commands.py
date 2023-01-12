@@ -71,7 +71,7 @@ async def search_unit_code(ctx: lightbulb.Context):
     embed = embed_maker(unit_code, handbook)
     # make button: requisites
     row = ctx.bot.rest.build_message_action_row()
-    labels = ["Prerequisites", "Corerequisites", "Prohibitions", "back"]
+    labels = ["Prerequisites", "Corerequisites", "Prohibitions", "Back"]
     for label in labels:
         row.add_button(hikari.ButtonStyle.PRIMARY, f'{label},{unit_code}').set_label(
             label).add_to_container()
