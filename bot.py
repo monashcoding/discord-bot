@@ -1,6 +1,6 @@
 # loading super secret bot tokens...
 from dotenv import load_dotenv
-load_dotenv('bot.env')
+load_dotenv()
 import os
 # Environ variables
 token = os.getenv('token')
