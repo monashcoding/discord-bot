@@ -78,7 +78,6 @@ async def search_unit_code(ctx: lightbulb.Context):
     await ctx.respond(embed, component=row)
 
 
-
 @plugin.command
 @lightbulb.option("code", "Insert a valid unit code")
 @lightbulb.command('search_prereqs_to', 'Searches for units that the current unit is a prereq to.')
@@ -94,6 +93,7 @@ async def search_prereqs_to(ctx: lightbulb.Context):
     embed = hikari.Embed(title=f"{unit_code}: Prerequisites to")
     embed.add_field("Units:", prereqs_to_str)
     await ctx.respond(embed)
+
 
 @plugin.command
 @lightbulb.option("unit_list", "Insert a list of valid units you have completed")
@@ -111,7 +111,6 @@ async def list_codes(ctx: lightbulb.Context):
             invalid_counter = True
     if (invalid_counter):
         return ctx.respond(output_invalid)
-
 
     units_lst = units_can_take(unit_list, handbook)
     for unit in units_lst:

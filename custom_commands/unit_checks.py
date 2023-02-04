@@ -8,6 +8,7 @@ def unit_prohibition_check(unit_list: str, unit_code: str, handbook: dict) -> bo
             return False
     return True
 
+
 def prereqs_to(unit_code: str, handbook: dict) -> list:
     """    
     Input a unit code.
@@ -21,7 +22,7 @@ def prereqs_to(unit_code: str, handbook: dict) -> list:
 
     Returns:
         str: _description_
-    
+
     """
     output = []
     for unit in handbook:
@@ -29,7 +30,6 @@ def prereqs_to(unit_code: str, handbook: dict) -> list:
             if (unit_code in unit_prereq_dict['units']):
                 output.append(unit)
     return output
-
 
 
 def unit_prereq_checker(unit_list: list, unit_code: str, handbook: dict) -> tuple:
@@ -60,6 +60,7 @@ def unit_prereq_checker(unit_list: list, unit_code: str, handbook: dict) -> tupl
         if (counter < numreq):
             return (False, counter)
     return True, counter
+
 
 def unit_credit_prereq_check(unit_list, unit_code, handbook) -> bool:
     credit_total = 0

@@ -1,10 +1,11 @@
 from hikari import Embed
 
+
 def embed_maker(unit_code: str, handbook: dict) -> Embed:
     """
     Makes an embed for a unit, with information about it.
-    
-    
+
+
     """
     unit_dict = handbook.get(unit_code, {})
     # Creation of embed
@@ -16,7 +17,6 @@ def embed_maker(unit_code: str, handbook: dict) -> Embed:
     unit_school = unit_dict['school']
     # Requisites
     unit_reqs_dict = unit_dict['requisites']
-
 
     # Offerings
     unit_offerings_dict = unit_dict['offerings']

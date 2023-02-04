@@ -8,12 +8,14 @@ def str_prereqs_to(unit_code, handbook) -> str:
     """
     return "\n".join(prereqs_to(unit_code, handbook))
 
-def units_can_take(unit_list: list,handbook: dict) -> list:
+
+def units_can_take(unit_list: list, handbook: dict) -> list:
     """
     Determines the units you can take, for a list of units you have done.
     """
     output = []
-    credit_attained = sum([int(handbook[unit]['credit_points']) for unit in unit_list])
+    credit_attained = sum([int(handbook[unit]['credit_points'])
+                          for unit in unit_list])
     for unit in handbook:
         # Skip if unit is already completed.
         if unit in unit_list:
@@ -23,5 +25,5 @@ def units_can_take(unit_list: list,handbook: dict) -> list:
         credit_check = credit_attained >= handbook[unit]['requisites']['cp_required']
         if (unit_check[0] and credit_check and prohibition_check):
             if (unit_check[1] > 0):
-                output.append(unit) 
+                output.append(unit)
     return output
