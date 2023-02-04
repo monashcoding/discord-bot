@@ -8,7 +8,7 @@ token = os.getenv('token')
 import lightbulb
 import hikari
 # Instantiate a Bot instance
-bot = lightbulb.BotApp(token, prefix="!", intents=hikari.Intents.ALL, default_enabled_guilds= [804513491763200001])
+bot = lightbulb.BotApp(token, prefix="!", intents=hikari.Intents.ALL, default_enabled_guilds= [810515446046523442, 804513491763200001])
 
 # Register the command to the bot
 
