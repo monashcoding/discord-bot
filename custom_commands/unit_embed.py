@@ -1,5 +1,11 @@
-import hikari
-def embed_maker(unit_code: str, handbook: dict):
+from hikari import Embed
+
+def embed_maker(unit_code: str, handbook: dict) -> Embed:
+    """
+    Makes an embed for a unit, with information about it.
+    
+    
+    """
     unit_dict = handbook.get(unit_code, {})
     # Creation of embed
 
@@ -10,16 +16,12 @@ def embed_maker(unit_code: str, handbook: dict):
     unit_school = unit_dict['school']
     # Requisites
     unit_reqs_dict = unit_dict['requisites']
-    unit_prohibs = unit_reqs_dict['prohibitions']
-    unit_coreqs = unit_reqs_dict['corequisites']
 
-    # Prerequisites (nested dict)
-    unit_prereqs = unit_reqs_dict['prerequisites']
 
     # Offerings
     unit_offerings_dict = unit_dict['offerings']
 
-    embed = hikari.Embed(title=unit_name, description=unit_desc)
+    embed = Embed(title=unit_name, description=unit_desc)
 
     # Adding fields: unit code, credit points, faculty, offerings
     embed.add_field("Unit code:", unit_code)
@@ -35,4 +37,5 @@ def embed_maker(unit_code: str, handbook: dict):
     embed.add_field("Offerings:", unit_offering_str)
     embed.add_field("Number of credits required prior:",
                     unit_reqs_dict['cp_required'])
+
     return embed
