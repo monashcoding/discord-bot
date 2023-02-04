@@ -100,22 +100,19 @@ async def search_prereqs_to(ctx: lightbulb.Context):
 @lightbulb.command('units_can_take', 'Returns a list of units you can complete, given an input list of completed units')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def list_codes(ctx: lightbulb.Context):
-    output = ""
-    output_invalid = "The following input units are invalid:\n"
+    invalid_units = []
     invalid_counter = False
     unit_list = ctx.options.unit_list.upper().replace(" ", "").split(",")
 
     for unit in unit_list:
-        if not (handbook.get(unit, False)):
-            output_invalid += f'{unit}'
+        if unit not in handbook:
+            invalid_units.append(unit)
             invalid_counter = True
     if (invalid_counter):
-        return ctx.respond(output_invalid)
+        await ctx.respond("The following input units are invalid:\n"+"\n".join(invalid_units))
 
-    units_lst = units_can_take(unit_list, handbook)
-    for unit in units_lst:
-        output += f"{unit}\n"
+    takeable_units = units_can_take(unit_list, handbook)
 
     embed = hikari.Embed(title="List of units")
-    embed.add_field("Units:", output)
+    embed.add_field("Units:", "\n".join(takeable_units))
     await ctx.respond(embed)
