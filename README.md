@@ -56,7 +56,3 @@ After installing the required libraries and inserting your token, simply run the
 
 
 
-## Appendix
-
-Any additional information goes here
-
