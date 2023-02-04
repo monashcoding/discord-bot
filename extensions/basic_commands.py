@@ -97,7 +97,7 @@ async def search_prereqs_to(ctx: lightbulb.Context):
 
 @plugin.command
 @lightbulb.option("unit_list", "Insert a list of valid units you have completed")
-@lightbulb.command('units_can_complete', 'Returns a list of units you can complete, given an input list of completed units')
+@lightbulb.command('units_can_take', 'Returns a list of units you can complete, given an input list of completed units')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def list_codes(ctx: lightbulb.Context):
     output = ""
@@ -113,7 +113,7 @@ async def list_codes(ctx: lightbulb.Context):
         return ctx.respond(output_invalid)
 
 
-    units_lst = units_can_complete(unit_list, handbook)
+    units_lst = units_can_take(unit_list, handbook)
     for unit in units_lst:
         output += f"{unit}\n"
 
