@@ -44,7 +44,7 @@ async def on_component_interaction(event: hikari.InteractionCreateEvent) -> None
 
     embed = hikari.Embed(title=title_str,
                          description=output_str)
-    if label == "back":
+    if label == "Back":
         embed = embed_maker(unit_code, handbook)
     try:
         await event.interaction.create_initial_response(
