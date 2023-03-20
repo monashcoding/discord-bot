@@ -119,6 +119,7 @@ async def list_codes(ctx: lightbulb.Context):
     invalid_units = []
     invalid_counter = False
     unit_list = ctx.options.unit_list.upper().replace(" ", "").split(",")
+    unit_list = [unit for unit in set(unit_list)]
 
     for unit in unit_list:
         if unit not in handbook:
@@ -128,7 +129,7 @@ async def list_codes(ctx: lightbulb.Context):
         await ctx.respond("The following input units are invalid:\n"+"\n".join(invalid_units))
 
     takeable_units = units_can_take(unit_list, handbook)
-
+    print()
     embed = hikari.Embed(title="List of units")
     embed.add_field("Units:", "\n".join(takeable_units))
     await ctx.respond(embed)
