@@ -7,9 +7,25 @@ plugin = lightbulb.Plugin('unit_commands')
 with open('JSON\handbook_data_complete.json', 'r') as f:
     handbook: dict = json.load(f)
 
+with open('JSON\my_user_commands_dict.json', 'r') as fp:
+    user_commands_dict: dict = json.load(fp)
+
 
 def load(bot):
     bot.add_plugin(plugin)
+
+
+@plugin.command
+@lightbulb.option('command', 'Insert command name')
+@lightbulb.command('help', 'Assistance with commands')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def help(ctx: lightbulb.Context):
+    print()
+    desc = user_commands_dict[ctx.options.command]
+    embed = hikari.Embed(title='Commmand help')
+    embed.add_field(ctx.options.command,desc)
+    await ctx.respond(embed)
+
 
 
 @plugin.listener(hikari.InteractionCreateEvent)
