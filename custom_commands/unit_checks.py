@@ -50,8 +50,8 @@ def unit_prereq_checker(unit_list: list, unit_code: str, handbook: dict) -> tupl
     # looping through unit_code prerequisites to see if prereqs are met.
     # at least one unit in the unit list is actually in the prereq.
     unit_prereq_dict = handbook[unit_code]['requisites']['prerequisites']
-    counter = 0
     for units_and in unit_prereq_dict:
+        counter = 0
         numreq = units_and['NumReq']
         units_or = units_and['units']
         for unit in unit_list:
