@@ -134,5 +134,8 @@ async def list_codes(ctx: lightbulb.Context):
 
     takeable_units = units_can_take(unit_list, handbook, filter_arg)
     embed = hikari.Embed(title="List of units")
-    embed.add_field("Units:", "\n".join(takeable_units))
+    output = "\n".join(takeable_units)
+    if (len(takeable_units) == 0):
+         output = "No takeable units."
+    embed.add_field("Units:", output)
     await ctx.respond(embed)
