@@ -9,7 +9,7 @@ def unit_prohibition_check(unit_list: str, unit_code: str, handbook: dict) -> bo
     return True
 
 
-def prereqs_to(unit_code: str, handbook: dict) -> list:
+def prereqs_to(unit_code: str, handbook: dict, filter = None) -> list:
     """    
     Input a unit code.
     Looks into each unit in the handbook.
@@ -26,6 +26,9 @@ def prereqs_to(unit_code: str, handbook: dict) -> list:
     """
     output = []
     for unit in handbook:
+        filter_val = filter_check(unit, filter)
+        if not filter_val:
+            continue
         for unit_prereq_dict in handbook[unit]['requisites']['prerequisites']:
             if (unit_code in unit_prereq_dict['units']):
                 output.append(unit)
@@ -71,4 +74,13 @@ def unit_credit_prereq_check(unit_list, unit_code, handbook) -> bool:
 
     if (credit_total < unit_credit_prereq):
         return False
+    return True
+
+
+def filter_check(unit_code, filter):
+    if filter is None:
+        return True
+    for i in range(0, len(filter)):
+        if unit_code[i] != filter[i]:
+            return False
     return True

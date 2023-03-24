@@ -96,14 +96,16 @@ async def search_unit_code(ctx: lightbulb.Context):
 
 @plugin.command
 @lightbulb.option("code", "Insert a valid unit code")
+@lightbulb.option("filter_arg", "Optional argument for filtering.", required=False)
 @lightbulb.command('search_prereqs_to', 'Searches for units that the current unit is a prereq to.')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def search_prereqs_to(ctx: lightbulb.Context):
     unit_code = ctx.options.code.upper()
+    filter_arg = ctx.options.filter_arg
     unit_dict = handbook.get(unit_code, False)
     if (not unit_dict):
         await ctx.respond(content="Invalid unit code")
-    prereqs_to_str = str_prereqs_to(unit_code, handbook)
+    prereqs_to_str = str_prereqs_to(unit_code, handbook, filter_arg)
     if (not prereqs_to_str):
         prereqs_to_str = "No current units."
     embed = hikari.Embed(title=f"{unit_code}: Prerequisites to")
@@ -113,12 +115,14 @@ async def search_prereqs_to(ctx: lightbulb.Context):
 
 @plugin.command
 @lightbulb.option("unit_list", "Insert a list of valid units you have completed")
+@lightbulb.option("filter_arg", "An extra filter for units.", required= False)
 @lightbulb.command('units_can_take', 'Returns a list of units you can complete, given an input list of completed units')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def list_codes(ctx: lightbulb.Context):
     invalid_units = []
     invalid_counter = False
     unit_list = ctx.options.unit_list.upper().replace(" ", "").split(",")
+    filter_arg = ctx.options.filter_arg
     unit_list = [unit for unit in set(unit_list)]
 
     for unit in unit_list:
@@ -128,8 +132,7 @@ async def list_codes(ctx: lightbulb.Context):
     if (invalid_counter):
         await ctx.respond("The following input units are invalid:\n"+"\n".join(invalid_units))
 
-    takeable_units = units_can_take(unit_list, handbook)
-    print()
+    takeable_units = units_can_take(unit_list, handbook, filter_arg)
     embed = hikari.Embed(title="List of units")
     embed.add_field("Units:", "\n".join(takeable_units))
     await ctx.respond(embed)
