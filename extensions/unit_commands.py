@@ -32,7 +32,6 @@ async def on_component_interaction(event: hikari.InteractionCreateEvent) -> None
     # Filter out all unwanted interactions
     if not isinstance(event.interaction, hikari.ComponentInteraction):
         return
-    print(event.interaction.custom_id)
     label, unit_code = event.interaction.custom_id.split(",")
     unit_dict = handbook[unit_code]
     title_str = f'{unit_code} {label}'
@@ -142,21 +141,28 @@ async def list_codes(ctx: lightbulb.Context):
 
 @plugin.command
 @lightbulb.option("unit_name", "Insert a valid unit code")
+@lightbulb.option("top_x_results", "Specifies the top x results, has absolute limit of 25 units.", required= False, default= 25)
 @lightbulb.command('search_name', 'Searches for units with similar name to request.')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def fuzzy_search(ctx: lightbulb.Context):
-    unit_request = ctx.options.unit_name
-    if (len(unit_request) <= 4):
-        await ctx.respond(content= "A more specific request is required.")
+    unit_request = ctx.options.unit_name 
+    top_x = int(ctx.options.top_x_results)
+    if (top_x > 25): top_x = 25
     lst_potential_units = search_by_name(unit_request, handbook)
     if (len(lst_potential_units) == 0):
-        await ctx.respond(content= "No units found similar to request.")
-    elif (len(lst_potential_units) >= 30):
-        await ctx.respond(content= f"Too many units similar to request \'{unit_request}\', a more specific request is required.")
-    output = "\n".join([unit[0] + f" {handbook[unit[0]]['unit_name']}" for unit in lst_potential_units])
-    embed = hikari.Embed(title= f"List of units similar to request \'{unit_request}\'")
-    embed.add_field("Units:", output)
+        embed = hikari.Embed(title= "Error")
+        embed.add_field("Reason:", "No units found upon request.")
+    else:
+        if (top_x <= len(lst_potential_units)):
+            lst_potential_units = lst_potential_units[0: top_x]
+        output = "\n".join([unit[0] + f" {handbook[unit[0]]['unit_name']}" for unit in lst_potential_units])
+        print(len(output))
+        embed = hikari.Embed(title= f"Top {top_x} units similar to request \'{unit_request}\' ")
+        embed.add_field("Units:", output)
     await ctx.respond(embed)
+
+
+
 
         
 

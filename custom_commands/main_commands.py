@@ -19,6 +19,7 @@ def substring_matching(string_1, string_2):
                 return i
     return -1
 
+
 def units_can_take(unit_list: list, handbook: dict, filter = False) -> list:
     """
     Determines the units you can take, for a list of units you have done.
