@@ -20,7 +20,6 @@ def load(bot):
 @lightbulb.command('help', 'Assistance with commands')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx: lightbulb.Context):
-    print()
     desc = user_commands_dict[ctx.options.command]
     embed = hikari.Embed(title='Commmand help')
     embed.add_field(ctx.options.command,desc)
@@ -139,3 +138,27 @@ async def list_codes(ctx: lightbulb.Context):
          output = "No takeable units."
     embed.add_field("Units:", output)
     await ctx.respond(embed)
+
+
+@plugin.command
+@lightbulb.option("unit_name", "Insert a valid unit code")
+@lightbulb.command('search_name', 'Searches for units with similar name to request.')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def fuzzy_search(ctx: lightbulb.Context):
+    unit_request = ctx.options.unit_name
+    if (len(unit_request) <= 4):
+        await ctx.respond(content= "A more specific request is required.")
+    lst_potential_units = search_by_name(unit_request, handbook)
+    if (len(lst_potential_units) == 0):
+        await ctx.respond(content= "No units found similar to request.")
+    elif (len(lst_potential_units) >= 30):
+        await ctx.respond(content= f"Too many units similar to request \'{unit_request}\', a more specific request is required.")
+    output = "\n".join([unit[0] + f" {handbook[unit[0]]['unit_name']}" for unit in lst_potential_units])
+    embed = hikari.Embed(title= f"List of units similar to request \'{unit_request}\'")
+    embed.add_field("Units:", output)
+    await ctx.respond(embed)
+
+        
+
+
+
