@@ -1,9 +1,12 @@
 import lightbulb
 import json
 import hikari
+from lightbulb.utils.pag import EmbedPaginator
 from custom_commands.main_commands import *
 plugin = lightbulb.Plugin('unit_commands')
 
+
+"Global variables"
 with open('JSON\handbook_data_complete.json', 'r') as f:
     handbook: dict = json.load(f)
 
@@ -32,45 +35,48 @@ async def on_component_interaction(event: hikari.InteractionCreateEvent) -> None
     # Filter out all unwanted interactions
     if not isinstance(event.interaction, hikari.ComponentInteraction):
         return
-    label, unit_code = event.interaction.custom_id.split(",")
-    unit_dict = handbook[unit_code]
-    title_str = f'{unit_code} {label}'
-    output_str = ""
-    if label == "Prerequisites":
-        unit_prereqs = unit_dict['requisites']['prerequisites']
+    interaction_info =  event.interaction.custom_id.split(",")
+    if (interaction_info[0] == "search"):
+        label = interaction_info[1]
+        unit_code = interaction_info[2]
 
-        for unit in unit_prereqs:
-            temp_lst = [f"\n{unit['NumReq']} of"]
-            temp_lst.append("\n".join([unit_or for unit_or in unit['units']]))
-            output_str += "\n".join(temp_lst)
+        unit_dict = handbook[unit_code]
+        title_str = f'{unit_code} {label}'
+        output_str = ""
+        if label == "Prerequisites":
+            unit_prereqs = unit_dict['requisites']['prerequisites']
 
-    elif label == "Corerequisites":
-        unit_coreqs = unit_dict['requisites']['corequisites']
+            for unit in unit_prereqs:
+                temp_lst = [f"\n{unit['NumReq']} of"]
+                temp_lst.append("\n".join([unit_or for unit_or in unit['units']]))
+                output_str += "\n".join(temp_lst)
 
-        for unit in unit_coreqs:
-            temp_lst = [f"\n{unit['NumReq']} of"]
-            temp_lst.append("\n".join([unit_or for unit_or in unit['units']]))
-            output_str += "\n".join(temp_lst)
+        elif label == "Corerequisites":
+            unit_coreqs = unit_dict['requisites']['corequisites']
 
-    elif label == "Prohibitions":
-        unit_prohibs = unit_dict['requisites']['prohibitions']
-        output_str = "\n".join(unit_prohibs)
+            for unit in unit_coreqs:
+                temp_lst = [f"\n{unit['NumReq']} of"]
+                temp_lst.append("\n".join([unit_or for unit_or in unit['units']]))
+                output_str += "\n".join(temp_lst)
 
-    embed = hikari.Embed(title=title_str,
-                         description=output_str)
-    if label == "Back":
-        embed = embed_maker(unit_code, handbook)
-    try:
-        await event.interaction.create_initial_response(
+        elif label == "Prohibitions":
+            unit_prohibs = unit_dict['requisites']['prohibitions']
+            output_str = "\n".join(unit_prohibs)
 
-            hikari.ResponseType.MESSAGE_UPDATE,
-            embed=embed,
-        )
-    except hikari.NotFoundError:
-        await event.interaction.edit_initial_response(
-            embed=embed,
-        )
+        embed = hikari.Embed(title=title_str,
+                            description=output_str)
+        if label == "Back":
+            embed = embed_maker(unit_code, handbook)
+        try:
+            await event.interaction.create_initial_response(
 
+                hikari.ResponseType.MESSAGE_UPDATE,
+                embed=embed,
+            )
+        except hikari.NotFoundError:
+            await event.interaction.edit_initial_response(
+                embed=embed,
+            )
 
 @plugin.command
 @lightbulb.option("code", "Insert a valid unit code")
@@ -87,7 +93,7 @@ async def search_unit_code(ctx: lightbulb.Context):
     row = ctx.bot.rest.build_message_action_row()
     labels = ["Prerequisites", "Corerequisites", "Prohibitions", "Back"]
     for label in labels:
-        row.add_button(hikari.ButtonStyle.PRIMARY, f'{label},{unit_code}').set_label(
+        row.add_button(hikari.ButtonStyle.PRIMARY, f'search, {label},{unit_code}').set_label(
             label).add_to_container()
     await ctx.respond(embed, component=row)
 
@@ -119,18 +125,18 @@ async def search_prereqs_to(ctx: lightbulb.Context):
 async def list_codes(ctx: lightbulb.Context):
     invalid_units = []
     invalid_counter = False
-    unit_list = ctx.options.unit_list.upper().replace(" ", "").split(",")
+    units = ctx.options.unit_list.upper().replace(" ", "").split(",")
     filter_arg = ctx.options.filter_arg
-    unit_list = [unit for unit in set(unit_list)]
+    units = list(set(units))
 
-    for unit in unit_list:
+    for unit in units:
         if unit not in handbook:
             invalid_units.append(unit)
             invalid_counter = True
     if (invalid_counter):
         await ctx.respond("The following input units are invalid:\n"+"\n".join(invalid_units))
 
-    takeable_units = units_can_take(unit_list, handbook, filter_arg)
+    takeable_units = units_can_take(units, handbook, filter_arg)
     embed = hikari.Embed(title="List of units")
     output = "\n".join(takeable_units)
     if (len(takeable_units) == 0):
@@ -141,30 +147,25 @@ async def list_codes(ctx: lightbulb.Context):
 
 @plugin.command
 @lightbulb.option("unit_name", "Insert a valid unit code")
-@lightbulb.option("top_x_results", "Specifies the top x results, has absolute limit of 25 units.", required= False, default= 25)
+@lightbulb.option("top_x_results", "Specifies the top x results, default is 100", required= False, default= 100)
 @lightbulb.command('search_name', 'Searches for units with similar name to request.')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def fuzzy_search(ctx: lightbulb.Context):
-    unit_request = ctx.options.unit_name 
+    unit_request = ctx.options.unit_name
     top_x = int(ctx.options.top_x_results)
-    if (top_x > 25): top_x = 25
+    if (len(unit_request) <= 4):
+        await ctx.respond(content= "A more specific request is required!")
+        return
     lst_potential_units = search_by_name(unit_request, handbook)
-    if (len(lst_potential_units) == 0):
-        embed = hikari.Embed(title= "Error")
-        embed.add_field("Reason:", "No units found upon request.")
-    else:
-        if (top_x <= len(lst_potential_units)):
-            lst_potential_units = lst_potential_units[0: top_x]
-        output = "\n".join([unit[0] + f" {handbook[unit[0]]['unit_name']}" for unit in lst_potential_units])
-        print(len(output))
-        embed = hikari.Embed(title= f"Top {top_x} units similar to request \'{unit_request}\' ")
-        embed.add_field("Units:", output)
-    await ctx.respond(embed)
-
-
+    lst_potential_units = lst_potential_units[0:min(top_x, len(lst_potential_units))]
+    output = [unit[0] + f" {handbook[unit[0]]['unit_name']}" for unit in lst_potential_units]
+    pag = EmbedPaginator(max_lines=25)
+    for unit in output:
+        pag.add_line(unit)
+    for page in pag.build_pages():
+        await ctx.respond(page)
 
 
         
-
 
 

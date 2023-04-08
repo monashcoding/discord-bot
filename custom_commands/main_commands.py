@@ -19,6 +19,19 @@ def substring_matching(string_1, string_2):
                 return i
     return -1
 
+def limit_field_pointers(input, char_limit) -> list:
+    i, j = 0, char_limit
+    lst_pointers = []
+    while (i < len(input) - char_limit):
+        while (input[j] != f"\n"):
+            j -= 1
+        lst_pointers.append((i, j))
+        i = j + 1
+        j = i + char_limit
+    lst_pointers.append((i, len(input) - 1))
+    return lst_pointers
+
+
 
 def units_can_take(unit_list: list, handbook: dict, filter = False) -> list:
     """
