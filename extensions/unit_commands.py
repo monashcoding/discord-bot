@@ -28,8 +28,6 @@ async def help(ctx: lightbulb.Context):
     embed.add_field(ctx.options.command,desc)
     await ctx.respond(embed)
 
-
-
 @plugin.listener(hikari.InteractionCreateEvent)
 async def on_component_interaction(event: hikari.InteractionCreateEvent) -> None:
     # Filter out all unwanted interactions
@@ -157,6 +155,7 @@ async def fuzzy_search(ctx: lightbulb.Context):
         await ctx.respond(content= "A more specific request is required!")
         return
     lst_potential_units = search_by_name(unit_request, handbook)
+    if not (lst_potential_units): await ctx.respond(content="No units found containing input request.")
     lst_potential_units = lst_potential_units[0:min(top_x, len(lst_potential_units))]
     output = [unit[0] + f" {handbook[unit[0]]['unit_name']}" for unit in lst_potential_units]
     pag = EmbedPaginator(max_lines=25)
