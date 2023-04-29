@@ -11,7 +11,7 @@ with open('JSON\handbook_data_complete.json', 'r') as f:
     handbook: dict = json.load(f)
 
 with open('JSON\help_cmd.json', 'r') as fp:
-    user_commands_dict: dict = json.load(fp)
+    help_dict: dict = json.load(fp)
 
 
 def load(bot):
@@ -23,7 +23,8 @@ def load(bot):
 @lightbulb.command('help', 'Assistance with commands')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx: lightbulb.Context):
-    desc = help_cmd[ctx.options.command]
+    desc = help_dict.get(ctx.options.command, False)
+    if not desc: desc = "No command found."
     embed = hikari.Embed(title='Commmand help')
     embed.add_field(ctx.options.command,desc)
     await ctx.respond(embed)
@@ -91,7 +92,7 @@ async def search_unit_code(ctx: lightbulb.Context):
     row = ctx.bot.rest.build_message_action_row()
     labels = ["Prerequisites", "Corerequisites", "Prohibitions", "Back"]
     for label in labels:
-        row.add_button(hikari.ButtonStyle.PRIMARY, f'search, {label},{unit_code}').set_label(
+        row.add_button(hikari.ButtonStyle.PRIMARY, f'search,{label},{unit_code}').set_label(
             label).add_to_container()
     await ctx.respond(embed, component=row)
 
