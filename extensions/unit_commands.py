@@ -168,4 +168,14 @@ async def fuzzy_search(ctx: lightbulb.Context):
 
         
 
+@plugin.command
+@lightbulb.command('greet', 'greets someone in general!')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def greet(ctx: lightbulb.Context):
+    message = "hallowhatdoyoustudy"
+    channel_id = 804513491763200006
+    await plugin.bot.rest.create_message(channel_id, message)
+
+
+
 
