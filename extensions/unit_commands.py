@@ -94,8 +94,10 @@ async def search_unit_code(ctx: lightbulb.Context):
     row = ctx.bot.rest.build_message_action_row()
     labels = ["Prerequisites", "Corerequisites", "Prohibitions", "Back"]
     for label in labels:
-        row.add_button(hikari.ButtonStyle.PRIMARY, f'search,{label},{unit_code}').set_label(
-            label).add_to_container()
+        row.add_interactive_button(
+        hikari.ButtonStyle.PRIMARY,
+        f'search,{label},{unit_code}', label= label)
+        
     await ctx.respond(embed, component=row)
 
 
