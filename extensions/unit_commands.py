@@ -216,8 +216,19 @@ async def left(event: hikari.MemberDeleteEvent) -> None:
 @lightbulb.command("unit_costs", "Computes the expected cost for the list of units.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def list_codes(ctx: lightbulb.Context):
+    invalid_units = []
     units = ctx.options.unit_list.upper().replace(" ", "").split(",")
     units = list(set(units))
+
+    for unit in units:
+        if unit not in handbook:
+            invalid_units.append(unit)
+            invalid_counter = True
+    if invalid_counter:
+        await ctx.respond(
+            "The following input units are invalid:\n" + "\n".join(invalid_units)
+        )
+
 
     expected_cost = (
         sum(
