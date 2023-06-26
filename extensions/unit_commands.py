@@ -7,12 +7,14 @@ plugin = lightbulb.Plugin('unit_commands')
 
 
 "Global variables"
-with open('JSON\handbook_data_complete.json', 'r') as f:
-    handbook: dict = json.load(f)
+with open('JSON\handbook_data_complete.json', 'r') as fp_1:
+    handbook: dict = json.load(fp_1)
 
-with open('JSON\help_cmd.json', 'r') as fp:
-    help_dict: dict = json.load(fp)
+with open('JSON\help_cmd.json', 'r') as fp_2:
+    help_dict: dict = json.load(fp_2)
 
+with open('JSON\sca_cost.json', 'r') as fp_3:
+    sca_cost: dict = json.load(fp_3)
 
 def load(bot):
     bot.add_plugin(plugin)
@@ -166,16 +168,39 @@ async def fuzzy_search(ctx: lightbulb.Context):
         await ctx.respond(page)
 
 
-        
+    
 
-@plugin.command
-@lightbulb.command('greet', 'greets someone in general!')
-@lightbulb.implements(lightbulb.SlashCommand)
-async def greet(ctx: lightbulb.Context):
+@plugin.listener(hikari.MemberCreateEvent)
+async def greet(event: hikari.MemberCreateEvent) -> None:
     message = "hallowhatdoyoustudy"
     channel_id = 804513491763200006
-    await plugin.bot.rest.create_message(channel_id, message)
+    my_channel = 1061247563963039834
+    user = event.member
+    await plugin.bot.rest.create_message(my_channel, content=f"{user} has joined M@M")
+    
+@plugin.listener(hikari.MemberDeleteEvent)
+async def left(event: hikari.MemberDeleteEvent) -> None:
+    user = event.old_member
+    my_channel = 1061247563963039834
+    await plugin.bot.rest.create_message(my_channel, content=f"{user} has left M@M")
 
 
+@plugin.command
+@lightbulb.option("unit_list", "Insert a list of valid units.")
+@lightbulb.option("domestic", "Input Y if domestic with CSP, N for not", required= True)
+@lightbulb.command('unit_costs', 'Computes the expected cost for the list of units.')
+@lightbulb.implements(lightbulb.SlashCommand)
+async def list_codes(ctx: lightbulb.Context):
 
+    units = ctx.options.unit_list.upper().replace(" ", "").split(",")
+    units = list(set(units))
+    
+    expected_cost = sum([sca_cost[str(handbook[unit]['sca_band'])] * int(handbook[unit]['credit_points']) for unit in units])
 
+    embed = hikari.Embed(title="List of units")
+    output = "\n".join(units)
+    if (len(units) == 0):
+         expected_cost = 0
+    embed.add_field("For the following units:", output)
+    embed.add_field("Expected_cost: (AUD) ", expected_cost)
+    await ctx.respond(embed)
