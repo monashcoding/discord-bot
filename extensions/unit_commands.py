@@ -19,18 +19,16 @@ with open('JSON\sca_cost.json', 'r') as fp_3:
 def load(bot):
     bot.add_plugin(plugin)
 
-
 @plugin.command
-@lightbulb.option('command', 'Insert command name')
 @lightbulb.command('help', 'Assistance with commands')
 @lightbulb.implements(lightbulb.SlashCommand)
 async def help(ctx: lightbulb.Context):
-    desc = help_dict.get(ctx.options.command, False)
-    if not desc: desc = "No command found."
-    embed = hikari.Embed(title='Commmand help')
-    embed.add_field(ctx.options.command,desc)
-    await ctx.respond(embed)
+  embed = hikari.Embed(title='Commmand help')
+  for key in help_dict:
+    embed.add_field(key, help_dict[key])
+  await ctx.respond(embed)
 
+  
 @plugin.listener(hikari.InteractionCreateEvent)
 async def on_component_interaction(event: hikari.InteractionCreateEvent) -> None:
     # Filter out all unwanted interactions
