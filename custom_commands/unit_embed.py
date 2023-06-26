@@ -5,21 +5,27 @@ def embed_maker(unit_code: str, handbook: dict) -> Embed:
     """
     Makes an embed for a unit, with information about it.
 
+    Args:
+        unit_code (str): The code of the unit for which to create the embed.
+        handbook (dict): A dictionary containing unit information.
+
+    Returns:
+        Embed: An embed containing information about the unit.
 
     """
     unit_dict = handbook.get(unit_code, {})
     # Creation of embed
 
-    unit_name = unit_dict['unit_name']
-    unit_code = unit_dict['unit_code']
-    unit_desc = unit_dict['description'].replace("<p>", "").replace("</p>", "")
-    unit_cp = unit_dict['credit_points']
-    unit_school = unit_dict['school']
+    unit_name = unit_dict["unit_name"]
+    unit_code = unit_dict["unit_code"]
+    unit_desc = unit_dict["description"].replace("<p>", "").replace("</p>", "")
+    unit_cp = unit_dict["credit_points"]
+    unit_school = unit_dict["school"]
     # Requisites
-    unit_reqs_dict = unit_dict['requisites']
+    unit_reqs_dict = unit_dict["requisites"]
 
     # Offerings
-    unit_offerings_dict = unit_dict['offerings']
+    unit_offerings_dict = unit_dict["offerings"]
 
     embed = Embed(title=unit_name, description=unit_desc)
 
@@ -30,12 +36,11 @@ def embed_maker(unit_code: str, handbook: dict) -> Embed:
 
     # Offerings string formatting
     unit_offering_str = ""
-    if (not unit_offerings_dict):
+    if not unit_offerings_dict:
         unit_offering_str = "No offerings available"
     for offering in unit_offerings_dict:
         unit_offering_str += f"Campus: {offering['campus']}\nTeaching Period: {offering['period']}\nMode: {offering['mode']}\n\n"
     embed.add_field("Offerings:", unit_offering_str)
-    embed.add_field("Number of credits required prior:",
-                    unit_reqs_dict['cp_required'])
+    embed.add_field("Number of credits required prior:", unit_reqs_dict["cp_required"])
 
     return embed
