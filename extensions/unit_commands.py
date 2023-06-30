@@ -54,21 +54,11 @@ async def on_component_interaction(event: hikari.InteractionCreateEvent) -> None
         output_str = ""
         if label == "Prerequisites":
             unit_prereqs = unit_dict["requisites"]["prerequisites"]
-            output_str = "\n".join(
-                [
-                    f"{unit['NumReq']} of\n" + "\n".join(unit["units"])
-                    for unit in unit_prereqs
-                ]
-            )
+            output_str = "\n".join([f"{unit['NumReq']} of\n" + "\n".join(unit["units"]) for unit in unit_prereqs])
 
         elif label == "Corerequisites":
             unit_coreqs = unit_dict["requisites"]["corequisites"]
-            output_str = "\n".join(
-                [
-                    f"{unit['NumReq']} of\n" + "\n".join(unit["units"])
-                    for unit in unit_coreqs
-                ]
-            )
+            output_str = "\n".join([f"{unit['NumReq']} of\n" + "\n".join(unit["units"]) for unit in unit_coreqs])
 
         elif label == "Prohibitions":
             unit_prohibs = unit_dict["requisites"]["prohibitions"]
@@ -103,9 +93,7 @@ async def search_unit_code(ctx: lightbulb.Context):
     row = ctx.bot.rest.build_message_action_row()
     labels = ["Prerequisites", "Corerequisites", "Prohibitions", "Back"]
     for label in labels:
-        row.add_interactive_button(
-            hikari.ButtonStyle.PRIMARY, f"search,{label},{unit_code}", label=label
-        )
+        row.add_interactive_button(hikari.ButtonStyle.PRIMARY, f"search,{label},{unit_code}", label=label)
 
     await ctx.respond(embed, component=row)
 
@@ -113,9 +101,7 @@ async def search_unit_code(ctx: lightbulb.Context):
 @plugin.command
 @lightbulb.option("code", "Insert a valid unit code")
 @lightbulb.option("filter_arg", "Optional argument for filtering.", required=False)
-@lightbulb.command(
-    "search_prereqs_to", "Searches for units that the current unit is a prereq to."
-)
+@lightbulb.command("search_prereqs_to", "Searches for units that the current unit is a prereq to.")
 @lightbulb.implements(lightbulb.SlashCommand)
 async def search_prereqs_to(ctx: lightbulb.Context):
     unit_code = ctx.options.code.upper()
@@ -151,9 +137,7 @@ async def fuzzy_search(ctx: lightbulb.Context):
     if not (lst_potential_units):
         await ctx.respond(content="No units found containing input request.")
     lst_potential_units = lst_potential_units[0 : min(top_x, len(lst_potential_units))]
-    output = [
-        unit[0] + f" {handbook[unit[0]]['unit_name']}" for unit in lst_potential_units
-    ]
+    output = [unit[0] + f" {handbook[unit[0]]['unit_name']}" for unit in lst_potential_units]
     pag = EmbedPaginator(max_lines=25)
     for unit in output:
         pag.add_line(unit)
@@ -183,19 +167,10 @@ async def list_codes(ctx: lightbulb.Context):
             invalid_units.append(unit)
             invalid_counter = True
     if invalid_counter:
-        await ctx.respond(
-            "The following input units are invalid:\n" + "\n".join(invalid_units)
-        )
-
+        await ctx.respond("The following input units are invalid:\n" + "\n".join(invalid_units))
 
     expected_cost = (
-        sum(
-            [
-                sca_cost[str(handbook[unit]["sca_band"])]
-                * int(handbook[unit]["credit_points"])
-                for unit in units
-            ]
-        )
+        sum([sca_cost[str(handbook[unit]["sca_band"])] * int(handbook[unit]["credit_points"]) for unit in units])
         if len(units) != 0
         else 0
     )
@@ -206,8 +181,6 @@ async def list_codes(ctx: lightbulb.Context):
     embed.add_field("For the following units:", output)
     embed.add_field("Expected_cost: (AUD) ", expected_cost)
     await ctx.respond(embed)
-
-
 
 
 @plugin.command
@@ -231,9 +204,7 @@ async def list_codes(ctx: lightbulb.Context):
             invalid_units.append(unit)
 
     if len(invalid_units):
-        await ctx.respond(
-            "The following input units are invalid:\n" + "\n".join(invalid_units)
-        )
+        await ctx.respond("The following input units are invalid:\n" + "\n".join(invalid_units))
 
     takeable_units = units_can_take_this_semester(units, handbook, semester, filter_arg)
     embed = hikari.Embed(title="List of units")

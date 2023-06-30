@@ -3,14 +3,14 @@ from custom_commands.unit_embed import *
 import re
 
 
-def str_prereqs_to(unit_code, handbook, filter_arg) -> str:
+def str_prereqs_to(unit_code: str, handbook: dict, filter_arg: str = None) -> str:
     """
     Converts prerequisites to newline-separated lines.
 
     Args:
         unit_code (str): The unit code to retrieve prerequisites for.
         handbook (dict): The handbook data dictionary containing unit information.
-        filter_arg: Filter argument to apply to the prerequisites.
+        filter_arg (str): Filter argument to apply to the prerequisites.
 
     Returns:
         str: Newline-separated string containing the prerequisites for the unit.
@@ -40,7 +40,7 @@ def substring_matching(string_1: str, string_2: str):
     return -1
 
 
-def limit_field_pointers(input, char_limit) -> list:
+def limit_field_pointers(input: str, char_limit: int) -> list:
     """
     Limits the field pointers within the given character limit.
 
@@ -63,14 +63,14 @@ def limit_field_pointers(input, char_limit) -> list:
     return lst_pointers
 
 
-def units_can_take(unit_list: list, handbook: dict, filter=None) -> list:
+def units_can_take(unit_list: list, handbook: dict, filter_arg: str = None) -> list:
     """
     Determines the units that can be taken based on the list of units already completed.
 
     Args:
         unit_list (list): List of unit codes that have been completed.
         handbook (dict): The handbook data dictionary containing unit information.
-        filter: Filter argument to apply while determining units (default: False).
+        filter (str): Filter argument to apply while determining units (default: False).
 
     Returns:
         list: List of unit codes that can be taken.
@@ -84,14 +84,14 @@ def units_can_take(unit_list: list, handbook: dict, filter=None) -> list:
         unit_check = unit_prereq_checker(unit_list, unit, handbook)
         prohibition_check = unit_prohibition_check(unit_list, unit, handbook)
         credit_check = credit_attained >= handbook[unit]["requisites"]["cp_required"]
-        filter_val = filter_check(unit, filter)
+        filter_val = filter_check(unit, filter_arg)
         if unit_check[0] and credit_check and prohibition_check and filter_val:
             if unit_check[1] > 0:
                 output.append(unit)
     return output
 
 
-def search_by_name(unit_request, handbook: dict):
+def search_by_name(unit_request: str, handbook: dict):
     """
     Searches for units by name using substring matching.
 
@@ -114,7 +114,8 @@ def search_by_name(unit_request, handbook: dict):
         pos_rank = pos
         length_rank = len(modified_name) - len(modified_req)
         lst_potential_units.append((unit, pos_rank, length_rank))
-
+    # sort by position, then length
+    # lst_potential_units.sort(key=lambda x: (x[1], x[2])) # Test me?
     lst_potential_units.sort(key=lambda x: x[2])
     lst_potential_units.sort(key=lambda x: x[1])
     return lst_potential_units
@@ -131,7 +132,7 @@ def get_unit_offerings(unit_code: str, handbook: dict) -> list[str]:
     Returns:
         list: List of offerings for the unit.
     """
-    offerings = [(offering['period'], offering['campus']) for offering in handbook[unit_code]["offerings"]]
+    offerings = [(offering["period"], offering["campus"]) for offering in handbook[unit_code]["offerings"]]
     return offerings
 
 
@@ -143,7 +144,7 @@ def units_can_take_this_semester(unit_list: list, handbook: dict, period: str = 
         unit_list (list): List of unit codes that have been completed.
         handbook (dict): The handbook data dictionary containing unit information.
         period (str): The period to check for (default: None).
-        filter (str): Filter argument to apply while determining units (default: False).
+        filter_arg (str): Filter argument to apply while determining units (default: False).
     Returns:
         list: List of unit codes that can be taken this semester.
     """
@@ -151,12 +152,12 @@ def units_can_take_this_semester(unit_list: list, handbook: dict, period: str = 
     units = units_can_take(unit_list, handbook, filter_arg)
     if period is None:
         return units
-    
+
     output = []
     for unit in units:
         offerings = get_unit_offerings(unit, handbook)
         for period_c, campus in offerings:
-            if period == period_c:
+            if period == None or period == period_c:
                 output.append(unit)
                 break
     return output

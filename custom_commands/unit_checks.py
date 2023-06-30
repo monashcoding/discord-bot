@@ -17,21 +17,21 @@ def unit_prohibition_check(unit_list: str, unit_code: str, handbook: dict) -> bo
     return True
 
 
-def prereqs_to(unit_code: str, handbook: dict, filter=None) -> list:
+def prereqs_to(unit_code: str, handbook: dict, filter_arg: str = None) -> list:
     """
     Retrieves a list of units that have the specified unit code as a prerequisite.
 
     Args:
         unit_code (str): The unit code to search for as a prerequisite.
         handbook (dict): The handbook data dictionary containing unit information.
-        filter (Optional): An optional filter value. Defaults to None.
+        filter_arg (str): An optional filter value. Defaults to None.
 
     Returns:
         list: A list of unit codes that have the specified unit code as a prerequisite.
     """
     output = []
     for unit in handbook:
-        filter_val = filter_check(unit, filter)
+        filter_val = filter_check(unit, filter_arg)
         if not filter_val:
             continue
         for unit_prereq_dict in handbook[unit]["requisites"]["prerequisites"]:
@@ -63,13 +63,11 @@ def unit_prereq_checker(unit_list: list, unit_code: str, handbook: dict) -> tupl
             if unit in units_or:
                 counter += 1
         if counter < numreq:
-            return (False, counter)
+            return False, counter
     return True, counter
 
 
-def unit_credit_prereq_check(
-    unit_list: list[str], unit_code: str, handbook: dict
-) -> bool:
+def unit_credit_prereq_check(unit_list: list[str], unit_code: str, handbook: dict) -> bool:
     """
     Checks if the total credits of the units in the unit list meet the credit prerequisites
     for the specified unit code.
@@ -92,20 +90,22 @@ def unit_credit_prereq_check(
     return True
 
 
-def filter_check(unit_code, filter):
+def filter_check(unit_code: str, filter_arg: str) -> bool:
     """
     Checks if the unit code matches the filter pattern.
+    eg. unit_code = "FIT1008", filter_arg = "FIT1" -> True
 
     Args:
         unit_code (str): The unit code to check against the filter.
-        filter (str): The filter pattern to match the unit code against.
+        filter_arg (str): The filter pattern to match the unit code against.
 
     Returns:
         bool: True if the unit code matches the filter pattern, False otherwise.
     """
-    if filter is None:
+    if filter_arg is None:
         return True
-    for i in range(0, len(filter)):
-        if unit_code[i] != filter[i]:
+    
+    for i in range(len(filter_arg)):
+        if unit_code[i] != filter_arg[i]:
             return False
     return True
