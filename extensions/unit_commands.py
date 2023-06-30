@@ -132,39 +132,6 @@ async def search_prereqs_to(ctx: lightbulb.Context):
 
 
 @plugin.command
-@lightbulb.option("unit_list", "Insert a list of valid units you have completed")
-@lightbulb.option("filter_arg", "An extra filter for units.", required=False)
-@lightbulb.command(
-    "units_can_take",
-    "Returns a list of units you can complete, given an input list of completed units",
-)
-@lightbulb.implements(lightbulb.SlashCommand)
-async def list_codes(ctx: lightbulb.Context):
-    invalid_units = []
-    invalid_counter = False
-    units = ctx.options.unit_list.upper().replace(" ", "").split(",")
-    filter_arg = ctx.options.filter_arg
-    units = list(set(units))
-
-    for unit in units:
-        if unit not in handbook:
-            invalid_units.append(unit)
-            invalid_counter = True
-    if invalid_counter:
-        await ctx.respond(
-            "The following input units are invalid:\n" + "\n".join(invalid_units)
-        )
-
-    takeable_units = units_can_take(units, handbook, filter_arg)
-    embed = hikari.Embed(title="List of units")
-    output = "\n".join(takeable_units)
-    if len(takeable_units) == 0:
-        output = "No takeable units."
-    embed.add_field("Units:", output)
-    await ctx.respond(embed)
-
-
-@plugin.command
 @lightbulb.option("unit_name", "Insert a valid unit code")
 @lightbulb.option(
     "top_x_results",
@@ -194,15 +161,6 @@ async def fuzzy_search(ctx: lightbulb.Context):
         await ctx.respond(page)
 
 
-@plugin.listener(hikari.MemberCreateEvent)
-async def greet(event: hikari.MemberCreateEvent) -> None:
-    message = "hallowhatdoyoustudy"
-    channel_id = 804513491763200006
-    my_channel = 1061247563963039834
-    user = event.member
-    await plugin.bot.rest.create_message(my_channel, content=f"{user} has joined M@M")
-
-
 @plugin.listener(hikari.MemberDeleteEvent)
 async def left(event: hikari.MemberDeleteEvent) -> None:
     user = event.old_member
@@ -219,7 +177,7 @@ async def list_codes(ctx: lightbulb.Context):
     invalid_units = []
     units = ctx.options.unit_list.upper().replace(" ", "").split(",")
     units = list(set(units))
-
+    invalid_counter = False
     for unit in units:
         if unit not in handbook:
             invalid_units.append(unit)
@@ -247,4 +205,40 @@ async def list_codes(ctx: lightbulb.Context):
 
     embed.add_field("For the following units:", output)
     embed.add_field("Expected_cost: (AUD) ", expected_cost)
+    await ctx.respond(embed)
+
+
+
+
+@plugin.command
+@lightbulb.option("unit_list", "Insert a list of valid units you have completed")
+@lightbulb.option("semester_code", "Eg. S1, S2, O, W, S")
+@lightbulb.option("filter_arg", "Prefix filter eg 'FIT2' for FIT2XXX", required=False)
+@lightbulb.command(
+    "units_can_take",
+    "Returns a list of units you can complete, given an input list of completed units and a semester code",
+)
+@lightbulb.implements(lightbulb.SlashCommand)
+async def list_codes(ctx: lightbulb.Context):
+    invalid_units = []
+    units = ctx.options.unit_list.upper().replace(" ", "").split(",")
+    semester = ctx.options.semester_code.upper()
+    filter_arg = ctx.options.filter_arg
+    units = list(set(units))
+
+    for unit in units:
+        if unit not in handbook:
+            invalid_units.append(unit)
+
+    if len(invalid_units):
+        await ctx.respond(
+            "The following input units are invalid:\n" + "\n".join(invalid_units)
+        )
+
+    takeable_units = units_can_take_this_semester(units, handbook, semester, filter_arg)
+    embed = hikari.Embed(title="List of units")
+    output = "\n".join(takeable_units)
+    if len(takeable_units) == 0:
+        output = "No takeable units."
+    embed.add_field("Units:", output)
     await ctx.respond(embed)

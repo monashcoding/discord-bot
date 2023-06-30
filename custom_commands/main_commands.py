@@ -63,7 +63,7 @@ def limit_field_pointers(input, char_limit) -> list:
     return lst_pointers
 
 
-def units_can_take(unit_list: list, handbook: dict, filter=False) -> list:
+def units_can_take(unit_list: list, handbook: dict, filter=None) -> list:
     """
     Determines the units that can be taken based on the list of units already completed.
 
@@ -118,3 +118,45 @@ def search_by_name(unit_request, handbook: dict):
     lst_potential_units.sort(key=lambda x: x[2])
     lst_potential_units.sort(key=lambda x: x[1])
     return lst_potential_units
+
+
+def get_unit_offerings(unit_code: str, handbook: dict) -> list[str]:
+    """
+    Gets the offerings for the unit.
+
+    Args:
+        unit_code (str): The unit code to retrieve offerings for.
+        handbook (dict): The handbook data dictionary containing unit information.
+
+    Returns:
+        list: List of offerings for the unit.
+    """
+    offerings = [(offering['period'], offering['campus']) for offering in handbook[unit_code]["offerings"]]
+    return offerings
+
+
+def units_can_take_this_semester(unit_list: list, handbook: dict, period: str = None, filter_arg: str = None) -> list:
+    """
+    Determines the units that can be taken this semester based on the list of units already completed.
+
+    Args:
+        unit_list (list): List of unit codes that have been completed.
+        handbook (dict): The handbook data dictionary containing unit information.
+        period (str): The period to check for (default: None).
+        filter (str): Filter argument to apply while determining units (default: False).
+    Returns:
+        list: List of unit codes that can be taken this semester.
+    """
+
+    units = units_can_take(unit_list, handbook, filter_arg)
+    if period is None:
+        return units
+    
+    output = []
+    for unit in units:
+        offerings = get_unit_offerings(unit, handbook)
+        for period_c, campus in offerings:
+            if period == period_c:
+                output.append(unit)
+                break
+    return output
