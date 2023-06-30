@@ -21,7 +21,7 @@ Contributions are always welcome! Create an issue, with a pull request if you ha
 Feel free to set up a virtual environment, or otherwise. Then install the required requisites:
 
 ```bash
-pip install - requirements.txt
+pip install -r requirements.txt
 ```
     
 ## Environment Variables
