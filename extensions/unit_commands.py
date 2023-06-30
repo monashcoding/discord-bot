@@ -212,7 +212,7 @@ async def list_codes(ctx: lightbulb.Context):
 
 @plugin.command
 @lightbulb.option("unit_list", "Insert a list of valid units you have completed")
-@lightbulb.option("semester_code", "Eg. S1, S2, O, W, S", required=False)
+@lightbulb.option("semester_code", "Eg. S1, S2, O, W, S")
 @lightbulb.option("filter_arg", "Prefix filter eg 'FIT2' for FIT2XXX", required=False)
 @lightbulb.command(
     "units_can_take",
